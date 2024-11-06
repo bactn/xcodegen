@@ -1,0 +1,50 @@
+targetTemplates:
+  TargetTemplate:
+    type: application
+    platform: iOS
+    sources:
+      - path: ../ifast-app/Libraries
+        # excludes:
+        #   - "SDWebImage/SDWebImage.xcframework"
+    dependencies:
+#      - package: Moya
+#      - package: Moya
+#        product: CombineMoya
+#      - sdk: CoreData.framework
+      - framework: ../ifast-app/Libraries/SDWebImage.xcframework
+        embed: true
+    settings:
+      base:
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - $(PROJECT_DIR)/ifast-app/Libraries
+#        SWIFT_INCLUDE_PATHS:
+#          - $(PROJECT_DIR)/Libraries/Modules/
+        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+        OTHER_LDFLAGS: -ObjC
+    prebuildScripts:
+      - name: Run Script SwiftGen
+        shell: /bin/sh
+        runOnlyWhenInstalling: false
+        script: |
+          if sh mint.sh list | grep -q 'SwiftGen'; then
+            sh mint.sh run swiftgen
+          else
+            echo "error: SwiftGen not installed; run 'sh mint.sh bootstrap' to install"
+          fi
+    postCompileScripts:
+      - name: Run Script SwiftLint
+        shell: /bin/sh
+        runOnlyWhenInstalling: false
+        script: |
+          sh mint.sh run swiftlint --fix
+          sh mint.sh run swiftlint
+    postBuildScripts:
+#      - name: Run Script 
+#        shell: /bin/sh
+#        inputFiles:
+#          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+#          - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+#        runOnlyWhenInstalling: false
+#        script: |
+#          ${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run

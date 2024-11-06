@@ -1,0 +1,4 @@
+packages:
+  Moya:
+    url: https://github.com/Moya/Moya.git
+    version: 15.0.3

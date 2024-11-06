@@ -1,0 +1,7 @@
+options:
+  defaultConfig: Debug
+  indentWidth: 4
+  tabWidth: 4
+  groupSortPosition: bottom
+  transitivelyLinkDependencies: false
+  developmentLanguage: ja

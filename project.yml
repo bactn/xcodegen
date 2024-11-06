@@ -1,0 +1,121 @@
+# The Xcodegen config file
+name: ifast-app
+
+include:
+#  - xcodegen_templates/options.yml
+- xcodegen_templates/packages.yml
+- xcodegen_templates/target_templates.yml
+
+options:
+  minimumXcodeGenVersion: 2.42.0
+  xcodeVersion: "13.3.1"
+
+attributes:
+  ORGANIZATIONNAME: iFast
+
+configs:
+  Debug: debug
+  Staging: debug
+  Release: release
+
+settings:
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: 13.0
+    SWIFT_VERSION: 5.0
+    ENABLE_BITCODE: NO
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    Staging:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: STAGING
+      GCC_PREPROCESSOR_DEFINITIONS:
+        - $(inherited)
+        - STAGING=1
+    Release:
+
+targets:
+  ifast-app:
+    templates:
+      - TargetTemplate
+    sources:
+      - path: ifast-app
+#      - path: Licenses
+    settings:
+      base:
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1.0.0
+        #CODE_SIGN_ENTITLEMENTS: ifast-app/ifast-app.entitlements
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: B79T985G2
+        INFOPLIST_FILE: ifast-app/Info.plist
+        TARGETED_DEVICE_FAMILY: 1
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: com.iFast.efast.dev
+          DEVELOPMENT_TEAM: B79T985G2
+          APP_DISPLAY_NAME: (DEV)Efast
+          PRODUCT_NAME: DEV_iFastApp
+          CODE_SIGN_IDENTITY: Apple Development
+          PROVISIONING_PROFILE_SPECIFIER: iFastDev
+        Staging:
+          PRODUCT_BUNDLE_IDENTIFIER: com.iFast.efast.stg
+          APP_DISPLAY_NAME: (STG)Efast
+          PRODUCT_NAME: STG_iFastApp
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: iFast App Staging
+        Release:
+          PRODUCT_BUNDLE_IDENTIFIER: com.iFast.efast.app
+          APP_DISPLAY_NAME: Efast
+          PRODUCT_NAME: iFastApp
+          CODE_SIGN_IDENTITY: iPhone Distribution
+          PROVISIONING_PROFILE_SPECIFIER: iFast App
+  ifast-appTests:
+   type: bundle.unit-test
+   platform: iOS
+   dependencies:
+     - target: ifast-app
+   sources:
+     - path: ifast-appTests
+   settings:
+     base:
+       ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: $(inherited)
+       BUNDLE_LOADER: $(TEST_HOST)
+       CODE_SIGN_STYLE: Automatic
+       INFOPLIST_FILE: ifast-appTests/Info.plist
+     configs:
+       Debug:
+         TEST_HOST: $(BUILT_PRODUCTS_DIR)/DEV_iFastApp.app/DEV_iFastApp
+       Staging:
+         TEST_HOST: $(BUILT_PRODUCTS_DIR)/STG_iFastApp.app/STG_iFastApp
+       Release:
+         TEST_HOST: $(BUILT_PRODUCTS_DIR)/iFastApp.app/iFastApp
+  ifast-appUITests:
+   type: bundle.ui-testing
+   platform: iOS
+   dependencies:
+     - target: ifast-app
+   sources:
+     - path: ifast-appUITests
+   settings:
+     base:
+       ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: $(inherited)
+       CODE_SIGN_STYLE: Automatic
+       TEST_TARGET_NAME: ifast-app
+     configs:
+       Debug:
+       Staging:
+       Release:
+
+schemes:
+  ifast-app:
+    build:
+      targets:
+        ifast-app: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

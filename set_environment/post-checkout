@@ -1,0 +1,11 @@
+#!/bin/sh
+[ "$SKIP_POST_CHECKOUT" = 1 ] && exit 0
+
+export LANG=en_US.UTF-8
+
+# exit on error
+set -e
+
+echo 'Update project'
+sh mint.sh run xcodegen
+#~/.rbenv/shims/bundle exec pod install
