@@ -1,0 +1,11 @@
+framework module VTBMiniApp {
+  umbrella header "VTBMiniApp.h"
+  export *
+
+  module * { export * }
+}
+
+module VTBMiniApp.Swift {
+  header "VTBMiniApp-Swift.h"
+  requires objc
+}

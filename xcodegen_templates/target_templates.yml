@@ -1,23 +1,32 @@
+# Config các framework static & libray trong project
 targetTemplates:
   TargetTemplate:
     type: application
     platform: iOS
     sources:
-      - path: ../ifast-app/Libraries
+      - path: ../iFast/Libraries
         # excludes:
         #   - "SDWebImage/SDWebImage.xcframework"
     dependencies:
-#      - package: Moya
-#      - package: Moya
-#        product: CombineMoya
-#      - sdk: CoreData.framework
-      - framework: ../ifast-app/Libraries/SDWebImage.xcframework
+      - framework: ../iFast/Libraries/KeychainSwift.xcframework
         embed: true
+      - framework: ../iFast/Libraries/Lottie.xcframework
+        embed: true
+      - framework: ../iFast/Libraries/SQLite.xcframework
+        embed: true
+      - framework: ../iFast/Libraries/TrustKit.xcframework
+        embed: true
+      - framework: ../iFast/Libraries/ZIPFoundation.xcframework
+        embed: true
+      - framework: ../iFast/Libraries/VTBMiniApp.xcframework
+        embed: true        
+      # - package: SDWebImage
+        # product: CombineMoya
     settings:
       base:
         LIBRARY_SEARCH_PATHS:
           - $(inherited)
-          - $(PROJECT_DIR)/ifast-app/Libraries
+          - $(PROJECT_DIR)/iFast/Libraries
 #        SWIFT_INCLUDE_PATHS:
 #          - $(PROJECT_DIR)/Libraries/Modules/
         DEBUG_INFORMATION_FORMAT: dwarf-with-dsym

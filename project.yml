@@ -1,5 +1,6 @@
 # The Xcodegen config file
-name: ifast-app
+# Cấu hình thông tin dự án. Từ đây đi ra các config khác khi chạy mint init or mint xocde
+name: iFast
 
 include:
 #  - xcodegen_templates/options.yml
@@ -11,7 +12,7 @@ options:
   xcodeVersion: "13.3.1"
 
 attributes:
-  ORGANIZATIONNAME: iFast
+  ORGANIZATIONNAME: miniapp
 
 configs:
   Debug: debug
@@ -34,83 +35,84 @@ settings:
     Release:
 
 targets:
-  ifast-app:
+  iFast:
     templates:
       - TargetTemplate
     sources:
-      - path: ifast-app
+      - path: iFast
+      # - path: dist
 #      - path: Licenses
     settings:
       base:
         MARKETING_VERSION: 1.0.0
         CURRENT_PROJECT_VERSION: 1.0.0
-        #CODE_SIGN_ENTITLEMENTS: ifast-app/ifast-app.entitlements
+        #CODE_SIGN_ENTITLEMENTS: miniapp/miniapp.entitlements
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: B79T985G2
-        INFOPLIST_FILE: ifast-app/Info.plist
+        INFOPLIST_FILE: iFast/Info.plist
         TARGETED_DEVICE_FAMILY: 1
       configs:
         Debug:
-          PRODUCT_BUNDLE_IDENTIFIER: com.iFast.efast.dev
+          PRODUCT_BUNDLE_IDENTIFIER: com.vtb.appointment
           DEVELOPMENT_TEAM: B79T985G2
-          APP_DISPLAY_NAME: (DEV)Efast
-          PRODUCT_NAME: DEV_iFastApp
+          APP_DISPLAY_NAME: (DEV)iFast
+          PRODUCT_NAME: DEV_iFast
           CODE_SIGN_IDENTITY: Apple Development
-          PROVISIONING_PROFILE_SPECIFIER: iFastDev
+          PROVISIONING_PROFILE_SPECIFIER: miniappDev
         Staging:
-          PRODUCT_BUNDLE_IDENTIFIER: com.iFast.efast.stg
-          APP_DISPLAY_NAME: (STG)Efast
-          PRODUCT_NAME: STG_iFastApp
+          PRODUCT_BUNDLE_IDENTIFIER: com.vtb.miniapp.stg
+          APP_DISPLAY_NAME: (STG)iFast
+          PRODUCT_NAME: STG_miniappApp
           CODE_SIGN_IDENTITY: Apple Distribution
-          PROVISIONING_PROFILE_SPECIFIER: iFast App Staging
+          PROVISIONING_PROFILE_SPECIFIER: vtb App Staging
         Release:
-          PRODUCT_BUNDLE_IDENTIFIER: com.iFast.efast.app
-          APP_DISPLAY_NAME: Efast
-          PRODUCT_NAME: iFastApp
+          PRODUCT_BUNDLE_IDENTIFIER: com.vtb.miniapp.app
+          APP_DISPLAY_NAME: iFast
+          PRODUCT_NAME: iFast
           CODE_SIGN_IDENTITY: iPhone Distribution
-          PROVISIONING_PROFILE_SPECIFIER: iFast App
-  ifast-appTests:
+          PROVISIONING_PROFILE_SPECIFIER: miniapp App
+  miniappTests:
    type: bundle.unit-test
    platform: iOS
    dependencies:
-     - target: ifast-app
+     - target: iFast
    sources:
-     - path: ifast-appTests
+     - path: miniappTests
    settings:
      base:
        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: $(inherited)
        BUNDLE_LOADER: $(TEST_HOST)
        CODE_SIGN_STYLE: Automatic
-       INFOPLIST_FILE: ifast-appTests/Info.plist
+       INFOPLIST_FILE: miniappTests/Info.plist
      configs:
        Debug:
-         TEST_HOST: $(BUILT_PRODUCTS_DIR)/DEV_iFastApp.app/DEV_iFastApp
+         TEST_HOST: $(BUILT_PRODUCTS_DIR)/DEV_miniappApp.app/DEV_miniappApp
        Staging:
-         TEST_HOST: $(BUILT_PRODUCTS_DIR)/STG_iFastApp.app/STG_iFastApp
+         TEST_HOST: $(BUILT_PRODUCTS_DIR)/STG_miniappApp.app/STG_miniappApp
        Release:
-         TEST_HOST: $(BUILT_PRODUCTS_DIR)/iFastApp.app/iFastApp
-  ifast-appUITests:
+         TEST_HOST: $(BUILT_PRODUCTS_DIR)/miniappApp.app/miniappApp
+  miniappUITests:
    type: bundle.ui-testing
    platform: iOS
    dependencies:
-     - target: ifast-app
+     - target: iFast
    sources:
-     - path: ifast-appUITests
+     - path: miniappUITests
    settings:
      base:
        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: $(inherited)
        CODE_SIGN_STYLE: Automatic
-       TEST_TARGET_NAME: ifast-app
+       TEST_TARGET_NAME: iFast
      configs:
        Debug:
        Staging:
        Release:
 
 schemes:
-  ifast-app:
+  iFast:
     build:
       targets:
-        ifast-app: all
+        iFast: all
     run:
       config: Debug
     profile:

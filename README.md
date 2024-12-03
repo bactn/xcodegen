@@ -1,5 +1,11 @@
 # iFast
 
+## How to setup enviroment?
+- cd root path
+```bash 
+bash set_environment/environment.sh
+```
+
 ## Develop environment
 - Xcode13.3.1
 - Swfit5.6
@@ -27,7 +33,7 @@ $ make xcode
 - Ruby (`rbenv install`)
 - Bundler (2.2.25)  
 - Mint  
-  Mint will management these lib
+  Mint will management these libs
     - XcodeGen
     - SwiftLint
     - SwiftGen
@@ -35,3 +41,10 @@ $ make xcode
 
 ## Architecture
 Clean Architecture
+
+
+### Mini App
+- install Vue.js or any js framework:
+    - import .zip file into project and unzip by VTBMiniAppSDK.unzipMiniApp
+    - vue create mini-app
+

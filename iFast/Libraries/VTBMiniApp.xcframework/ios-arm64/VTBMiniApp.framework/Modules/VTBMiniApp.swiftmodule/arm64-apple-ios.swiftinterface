@@ -1,0 +1,1028 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name VTBMiniApp
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import Combine
+import CommonCrypto
+import CoreLocation
+import CryptoKit
+import Foundation
+import SQLite
+import SQLite3
+import Swift
+import SwiftUI
+import TrustKit
+import UIKit
+@_exported import VTBMiniApp
+import WebKit
+import ZIPFoundation
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import os
+public enum MiniAppViewParameters {
+  case `default`(VTBMiniApp.MiniAppViewParameters.DefaultParams)
+  case url(VTBMiniApp.MiniAppViewParameters.UrlParams)
+  case info(VTBMiniApp.MiniAppViewParameters.InfoParams)
+}
+extension VTBMiniApp.MiniAppViewParameters {
+  public struct DefaultParams {
+    public init(config: VTBMiniApp.MiniAppConfig, type: VTBMiniApp.MiniAppType, appId: Swift.String, version: Swift.String? = nil, queryParams: Swift.String? = nil)
+  }
+  public struct UrlParams {
+    public init(config: VTBMiniApp.MiniAppConfig, type: VTBMiniApp.MiniAppType, url: Foundation.URL, queryParams: Swift.String? = nil)
+  }
+  public struct InfoParams {
+    public init(config: VTBMiniApp.MiniAppConfig, type: VTBMiniApp.MiniAppType, info: VTBMiniApp.MiniAppInfo, queryParams: Swift.String? = nil)
+  }
+}
+public enum MiniAppViewState {
+  case none
+  case loading
+  case active
+  case inactive
+  case error(any Swift.Error)
+}
+public enum MiniAppType {
+  case miniapp
+  case widget
+  public static func == (a: VTBMiniApp.MiniAppType, b: VTBMiniApp.MiniAppType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct MiniAppConfig {
+  public init(config: VTBMiniApp.MiniAppSdkConfig?, adsDisplayer: VTBMiniApp.MiniAppAdDisplayer? = nil, messageDelegate: any VTBMiniApp.MiniAppMessageDelegate, navigationDelegate: (any VTBMiniApp.MiniAppNavigationDelegate)? = nil)
+}
+public protocol MiniAppProgressViewable : UIKit.UIView {
+  func updateViewState(state: VTBMiniApp.MiniAppViewState)
+}
+@_Concurrency.MainActor(unsafe) public struct MiniAppSUIView : SwiftUI.UIViewRepresentable {
+  @_Concurrency.MainActor(unsafe) public init(params: VTBMiniApp.MiniAppViewParameters.DefaultParams, fromCache: Swift.Bool = false, handler: VTBMiniApp.MiniAppSUIViewHandler, fromBundle: Swift.Bool = false, miniAppManifest: VTBMiniApp.MiniAppManifest? = nil)
+  @_Concurrency.MainActor(unsafe) public init(urlParams: VTBMiniApp.MiniAppViewParameters.UrlParams)
+  @_Concurrency.MainActor(unsafe) public init(infoParams: VTBMiniApp.MiniAppViewParameters.InfoParams, fromCache: Swift.Bool = false)
+  @_Concurrency.MainActor(unsafe) public func makeUIView(context: VTBMiniApp.MiniAppSUIView.Context) -> VTBMiniApp.MiniAppView
+  @_Concurrency.MainActor(unsafe) public func updateUIView(_ uiView: VTBMiniApp.MiniAppView, context: VTBMiniApp.MiniAppSUIView.Context)
+  @_Concurrency.MainActor(unsafe) public func makeCoordinator() -> VTBMiniApp.MiniAppSUIView.Coordinator
+  public typealias Body = Swift.Never
+  public typealias UIViewType = VTBMiniApp.MiniAppView
+}
+extension VTBMiniApp.MiniAppSUIView {
+  @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class Coordinator : ObjectiveC.NSObject, Foundation.ObservableObject {
+    public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+    @objc deinit
+  }
+}
+public class MiniAppSUIViewHandler : Foundation.ObservableObject {
+  @Combine.Published @_projectedValueProperty($action) public var action: VTBMiniApp.MiniAppSUIViewAction? {
+    get
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    set
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    _modify
+  }
+  public var $action: Combine.Published<VTBMiniApp.MiniAppSUIViewAction?>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  @Combine.Published @_projectedValueProperty($isActive) public var isActive: Swift.Bool {
+    get
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    set
+    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    _modify
+  }
+  public var $isActive: Combine.Published<Swift.Bool>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  public var closeAlertInfo: (() -> VTBMiniApp.CloseAlertInfo?)?
+  public var miniAppTitle: (() -> Swift.String)?
+  public var miniAppIdentifier: (() -> Swift.String)?
+  public var sendJsonToMiniApp: ((Swift.String) -> Swift.Void)?
+  public init()
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+public enum MiniAppSUIViewAction {
+  case goBack
+  case goForward
+  public static func == (a: VTBMiniApp.MiniAppSUIViewAction, b: VTBMiniApp.MiniAppSUIViewAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol MiniAppDisplayDelegate : AnyObject {
+  func getMiniAppView() -> UIKit.UIView
+  func sendJsonToMiniApp(string jsonString: Swift.String)
+}
+public protocol MiniAppMessageDelegate : VTBMiniApp.ChatMessageBridgeDelegate, VTBMiniApp.MAAnalyticsDelegate, VTBMiniApp.MiniAppShareContentDelegate, VTBMiniApp.MiniAppUserInfoDelegate, VTBMiniApp.UniversalBridgeDelegate {
+  @available(*, deprecated, renamed: "getMessagingUniqueId(completionHandler:)")
+  func getUniqueId(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func getMessagingUniqueId(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func getMauid(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func requestDevicePermission(permissionType: VTBMiniApp.MiniAppDevicePermissionType, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKPermissionResponse, VTBMiniApp.MASDKPermissionError>) -> Swift.Void)
+  func requestCustomPermissions(permissions: [VTBMiniApp.MASDKCustomPermissionModel], miniAppTitle: Swift.String, completionHandler: @escaping (Swift.Result<[VTBMiniApp.MASDKCustomPermissionModel], VTBMiniApp.MASDKCustomPermissionError>) -> Swift.Void)
+  var getEnvironmentInfo: (() -> (VTBMiniApp.MAHostEnvironmentInfo))? { get }
+  func downloadFile(fileName: Swift.String, url: Swift.String, headers: VTBMiniApp.DownloadHeaders, completionHandler: @escaping (Swift.Result<Swift.String, VTBMiniApp.MASDKDownloadFileError>) -> Swift.Void)
+  func closeMiniApp(withConfirmation: Swift.Bool, completionHandler: @escaping (Swift.Result<Swift.Bool, VTBMiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func getHostAppThemeColors(completionHandler: @escaping (Swift.Result<VTBMiniApp.HostAppThemeColors?, VTBMiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  func isDarkMode(completionHandler: @escaping (Swift.Result<Swift.Bool, VTBMiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+}
+extension VTBMiniApp.MiniAppMessageDelegate {
+  public func requestCustomPermissions(permissions: [VTBMiniApp.MASDKCustomPermissionModel], miniAppTitle: Swift.String, completionHandler: @escaping (Swift.Result<[VTBMiniApp.MASDKCustomPermissionModel], VTBMiniApp.MASDKCustomPermissionError>) -> Swift.Void)
+  public func requestDevicePermission(permissionType: VTBMiniApp.MiniAppDevicePermissionType, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKPermissionResponse, VTBMiniApp.MASDKPermissionError>) -> Swift.Void)
+  @available(*, deprecated, renamed: "getMessagingUniqueId(completionHandler:)")
+  public func getUniqueId(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func getMessagingUniqueId(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func getMauid(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public var getEnvironmentInfo: (() -> (VTBMiniApp.MAHostEnvironmentInfo))? {
+    get
+  }
+  public func downloadFile(fileName: Swift.String, url: Swift.String, headers: VTBMiniApp.DownloadHeaders, completionHandler: @escaping (Swift.Result<Swift.String, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func sendJsonToHostApp(info: Swift.String, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, VTBMiniApp.UniversalBridgeError>) -> Swift.Void)
+  public func sendInfoToHostApp(info: VTBMiniApp.UniversalBridgeInfoParameters, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, VTBMiniApp.UniversalBridgeError>) -> Swift.Void)
+  public func closeMiniApp(withConfirmation: Swift.Bool, completionHandler: @escaping (Swift.Result<Swift.Bool, VTBMiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func getHostAppThemeColors(completionHandler: @escaping (Swift.Result<VTBMiniApp.HostAppThemeColors?, VTBMiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func isDarkMode(completionHandler: @escaping (Swift.Result<Swift.Bool, VTBMiniApp.MiniAppJavaScriptError>) -> Swift.Void)
+  public func didReceiveMAAnalytics(analyticsInfo: VTBMiniApp.MAAnalyticsInfo, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, VTBMiniApp.MAAnalyticsError>) -> Swift.Void)
+}
+public enum MASDKProtocolResponse : Swift.String {
+  case success
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKPermissionResponse : Swift.String {
+  case allowed
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public class MAHostEnvironmentInfo : Swift.Codable {
+  public init(platformVersion: Swift.String, hostVersion: Swift.String, sdkVersion: Swift.String, hostLocale: Swift.String)
+  convenience public init(hostLocale: Swift.String)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public typealias DownloadHeaders = [Swift.String : Swift.String]
+public class HostAppThemeColors : Swift.Codable {
+  final public let primaryColor: Swift.String
+  final public let secondaryColor: Swift.String
+  public init(primaryColor: Swift.String, secondaryColor: Swift.String)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public struct MASDKAccessTokenScopes : Swift.Codable, Swift.Hashable, Swift.Comparable {
+  public var audience: Swift.String
+  public var scopes: [Swift.String]
+  public init?(audience: Swift.String?, scopes: [Swift.String]?)
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: VTBMiniApp.MASDKAccessTokenScopes, rhs: VTBMiniApp.MASDKAccessTokenScopes) -> Swift.Bool
+  public static func < (lhs: VTBMiniApp.MASDKAccessTokenScopes, rhs: VTBMiniApp.MASDKAccessTokenScopes) -> Swift.Bool
+  public func isPartOf(_ fullScopes: [VTBMiniApp.MASDKAccessTokenScopes]) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppManifest : Swift.Codable, Swift.Equatable {
+  public let requiredPermissions: [VTBMiniApp.MASDKCustomPermissionModel]?
+  public let optionalPermissions: [VTBMiniApp.MASDKCustomPermissionModel]?
+  public let customMetaData: [Swift.String : Swift.String]?
+  public let accessTokenPermissions: [VTBMiniApp.MASDKAccessTokenScopes]?
+  public let versionId: Swift.String?
+  public init(requiredPermissions: [VTBMiniApp.MASDKCustomPermissionModel]?, optionalPermissions: [VTBMiniApp.MASDKCustomPermissionModel]?, customMetaData: [Swift.String : Swift.String]?, accessTokenPermissions: [VTBMiniApp.MASDKAccessTokenScopes]?, versionId: Swift.String?)
+  public static func == (lhs: VTBMiniApp.MiniAppManifest, rhs: VTBMiniApp.MiniAppManifest) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class MiniAppAdDisplayer : ObjectiveC.NSObject, VTBMiniApp.MiniAppAdDisplayDelegate {
+  public init(with delegate: any VTBMiniApp.MiniAppAdDisplayDelegate)
+  public func loadInterstitial(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func showInterstitial(for adId: Swift.String, onClosed: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func loadRewarded(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  public func showRewarded(for adId: Swift.String, onClosed: @escaping (Swift.Result<VTBMiniApp.MiniAppReward, any Swift.Error>) -> Swift.Void)
+  @objc deinit
+}
+public protocol MAAnalyticsDelegate : AnyObject {
+  func didReceiveMAAnalytics(analyticsInfo: VTBMiniApp.MAAnalyticsInfo, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, VTBMiniApp.MAAnalyticsError>) -> Swift.Void)
+}
+public struct MAAnalyticsConfig : Swift.Codable, Swift.Equatable {
+  public let acc: Swift.String
+  public let aid: Swift.String
+  public init(acc: Swift.String, aid: Swift.String)
+  public static func == (a: VTBMiniApp.MAAnalyticsConfig, b: VTBMiniApp.MAAnalyticsConfig) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension Foundation.Bundle {
+  public class var miniAppSDKBundle: Foundation.Bundle {
+    get
+  }
+}
+public struct MiniAppReward : Swift.Codable {
+  public init(type: Swift.String, amount: Swift.Int)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public protocol MiniAppUserInfoDelegate : AnyObject {
+  func getUserName(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func getProfilePhoto(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func getContacts(completionHandler: @escaping (Swift.Result<[VTBMiniApp.MAContact]?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func getAccessToken(miniAppId: Swift.String, scopes: VTBMiniApp.MASDKAccessTokenScopes, completionHandler: @escaping (Swift.Result<VTBMiniApp.MATokenInfo, VTBMiniApp.MASDKAccessTokenError>) -> Swift.Void)
+  func getPoints(completionHandler: @escaping (Swift.Result<VTBMiniApp.MAPoints, VTBMiniApp.MASDKPointError>) -> Swift.Void)
+}
+extension VTBMiniApp.MiniAppUserInfoDelegate {
+  public func getUserName(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func getProfilePhoto(completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func getContacts(completionHandler: @escaping (Swift.Result<[VTBMiniApp.MAContact]?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func getContacts() -> [VTBMiniApp.MAContact]?
+  public func getAccessToken(miniAppId: Swift.String, scopes: VTBMiniApp.MASDKAccessTokenScopes, completionHandler: @escaping (Swift.Result<VTBMiniApp.MATokenInfo, VTBMiniApp.MASDKAccessTokenError>) -> Swift.Void)
+  public func getAccessToken(miniAppId: Swift.String, completionHandler: @escaping (Swift.Result<VTBMiniApp.MATokenInfo, VTBMiniApp.MASDKCustomPermissionError>) -> Swift.Void)
+  public func getPoints(completionHandler: @escaping (Swift.Result<VTBMiniApp.MAPoints, VTBMiniApp.MASDKPointError>) -> Swift.Void)
+}
+public struct MAContact : Swift.Codable, Swift.Equatable, Swift.Hashable, Swift.Identifiable {
+  public var id: Swift.String
+  public var name: Swift.String?
+  public var email: Swift.String?
+  public var allEmailList: [Swift.String]?
+  public init(id: Swift.String, name: Swift.String? = nil, email: Swift.String? = nil, allEmailList: [Swift.String]? = nil)
+  public static func == (lhs: VTBMiniApp.MAContact, rhs: VTBMiniApp.MAContact) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias ID = Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class VTBMiniAppSDK : ObjectiveC.NSObject {
+  public static let version: Swift.String
+  public static var MAOrientationLock: UIKit.UIInterfaceOrientationMask
+  public static func configure()
+  public class func shared(with settings: VTBMiniApp.MiniAppSdkConfig? = nil, navigationSettings: VTBMiniApp.MiniAppNavigationConfig? = nil) -> VTBMiniApp.VTBMiniAppSDK
+  public func list(completionHandler: @escaping (Swift.Result<[VTBMiniApp.MiniAppInfo], VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func info(miniAppId: Swift.String, miniAppVersion: Swift.String? = nil, completionHandler: @escaping (Swift.Result<VTBMiniApp.MiniAppInfo, VTBMiniApp.MASDKError>) -> Swift.Void)
+  @available(*, deprecated, message: "Use `MiniAppView` instead")
+  public func create(appId: Swift.String, version: Swift.String? = nil, queryParams: Swift.String? = nil, completionHandler: @escaping (Swift.Result<any VTBMiniApp.MiniAppDisplayDelegate, VTBMiniApp.MASDKError>) -> Swift.Void, messageInterface: any VTBMiniApp.MiniAppMessageDelegate, adsDisplayer: VTBMiniApp.MiniAppAdDisplayer? = nil, fromCache: Swift.Bool? = false)
+  public func setCustomPermissions(forMiniApp appId: Swift.String, permissionList: [VTBMiniApp.MASDKCustomPermissionModel])
+  public func getCustomPermissions(forMiniApp appId: Swift.String) -> [VTBMiniApp.MASDKCustomPermissionModel]
+  @available(*, deprecated, message: "This will not be available from next major version")
+  public func listDownloadedWithCustomPermissions() -> [(VTBMiniApp.MiniAppInfo, [VTBMiniApp.MASDKCustomPermissionModel])]
+  @available(*, deprecated, message: "Use `MiniAppView` instead")
+  public func create(appInfo: VTBMiniApp.MiniAppInfo, queryParams: Swift.String? = nil, completionHandler: @escaping (Swift.Result<any VTBMiniApp.MiniAppDisplayDelegate, VTBMiniApp.MASDKError>) -> Swift.Void, messageInterface: any VTBMiniApp.MiniAppMessageDelegate, adsDisplayer: VTBMiniApp.MiniAppAdDisplayer? = nil, fromCache: Swift.Bool? = false)
+  public func getMiniAppManifest(miniAppId: Swift.String, miniAppVersion: Swift.String, languageCode: Swift.String? = nil, completionHandler: @escaping (Swift.Result<VTBMiniApp.MiniAppManifest, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func getDownloadedManifest(miniAppId: Swift.String) -> VTBMiniApp.MiniAppManifest?
+  public func getMiniAppPreviewInfo(using token: Swift.String, completionHandler: @escaping (Swift.Result<VTBMiniApp.PreviewMiniAppInfo, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public func keyboardShown(navigationBarHeight: CoreFoundation.CGFloat, screenHeight: CoreFoundation.CGFloat, keyboardheight: CoreFoundation.CGFloat)
+  public func keyboardHidden(navigationBarHeight: CoreFoundation.CGFloat, screenHeight: CoreFoundation.CGFloat = 0, keyboardheight: CoreFoundation.CGFloat = 0)
+  public func clearAllSecureStorage()
+  public func clearSecureStorage(for miniAppId: Swift.String)
+  public static func unzipMiniApp(fileName: Swift.String, miniAppId: Swift.String, versionId: Swift.String, completionHandler: ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void)? = nil)
+  public func downloadMiniApp(appId: Swift.String, versionId: Swift.String, completionHandler: @escaping (Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void)
+  public static func isMiniAppCacheAvailable(appId: Swift.String, versionId: Swift.String) -> Swift.Bool
+  @objc deinit
+}
+extension VTBMiniApp.VTBMiniAppSDK {
+  @available(*, deprecated, message: "Use `MiniAppView` instead")
+  public func create(url: Foundation.URL, queryParams: Swift.String? = nil, errorHandler: @escaping (VTBMiniApp.MASDKError) -> Swift.Void, messageInterface: any VTBMiniApp.MiniAppMessageDelegate, adsDisplayer: VTBMiniApp.MiniAppAdDisplayer? = nil) -> any VTBMiniApp.MiniAppDisplayDelegate
+}
+extension Foundation.NotificationCenter {
+  public func sendCustomEvent(_ event: VTBMiniApp.MiniAppEvent.Event)
+  public func sendKeyboardEvent(_ event: VTBMiniApp.MiniAppKeyboardEvent.Event)
+}
+extension UIKit.UIWindow {
+  @_Concurrency.MainActor(unsafe) public func topController() -> UIKit.UIViewController?
+}
+public protocol MiniAppViewable : UIKit.UIView, VTBMiniApp.MiniAppNavigationBarDelegate {
+  var state: Combine.PassthroughSubject<VTBMiniApp.MiniAppViewState, Swift.Never> { get }
+  var progressStateView: (any VTBMiniApp.MiniAppProgressViewable)? { get set }
+  func load(fromCache: Swift.Bool, completion: @escaping ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void))
+  #if compiler(>=5.3) && $AsyncAwait
+  @discardableResult
+  func loadAsync(fromCache: Swift.Bool) async throws -> VTBMiniApp.MiniAppView.MiniAppLoadStatus
+  #endif
+  var alertInfo: VTBMiniApp.CloseAlertInfo? { get }
+  var enable3DTouch: Swift.Bool { get }
+  func loadFromBundle(miniAppManifest: VTBMiniApp.MiniAppManifest?, completion: @escaping ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void))
+}
+extension VTBMiniApp.MiniAppViewable {
+  public func load(fromCache: Swift.Bool = false, completion: @escaping ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void))
+  #if compiler(>=5.3) && $AsyncAwait
+  @discardableResult
+  public func loadAsync(fromCache: Swift.Bool = false) async throws -> VTBMiniApp.MiniAppView.MiniAppLoadStatus
+  #endif
+  public func loadFromBundle(miniAppManifest: VTBMiniApp.MiniAppManifest? = nil, completion: @escaping ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void))
+}
+public enum MiniAppDevicePermissionType : Swift.String {
+  case location
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppCustomPermissionType : Swift.String, Swift.Codable, Swift.CaseIterable {
+  case userName
+  case profilePhoto
+  case contactsList
+  case accessToken
+  case sendMessage
+  case deviceLocation
+  case points
+  case fileDownload
+  public var title: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VTBMiniApp.MiniAppCustomPermissionType]
+  public typealias RawValue = Swift.String
+  public static var allCases: [VTBMiniApp.MiniAppCustomPermissionType] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppCustomPermissionGrantedStatus : Swift.String, Swift.Codable {
+  case allowed
+  case denied
+  case permissionNotAvailable
+  public var boolValue: Swift.Bool {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppEvent : Swift.String {
+  case externalWebViewClosed
+  case pause
+  case resume
+  case secureStorageReady
+  case secureStorageError
+  case miniappReceiveJsonString
+  public static let notificationName: Foundation.Notification.Name
+  public struct Event {
+    public init(miniAppId: Swift.String, miniAppVersion: Swift.String, type: VTBMiniApp.MiniAppEvent, comment: Swift.String)
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MiniAppKeyboardEvent : Swift.String {
+  case keyboardShown
+  case keyboardHidden
+  public static let notificationName: Foundation.Notification.Name
+  public struct Event {
+    public init(type: VTBMiniApp.MiniAppKeyboardEvent, comment: Swift.String, navigationBarHeight: CoreFoundation.CGFloat? = nil, keyboardHeight: CoreFoundation.CGFloat? = nil, screenHeight: CoreFoundation.CGFloat? = nil)
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MAAnalyticsEventType : Swift.String, Swift.Codable {
+  case appear
+  case click
+  case error
+  case custom
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MAAnalyticsActionType : Swift.String, Swift.Codable {
+  case open
+  case close
+  case add
+  case delete
+  case change
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public class MAAnalyticsInfo : Swift.Codable {
+  final public let eventType: VTBMiniApp.MAAnalyticsEventType
+  final public let actionType: VTBMiniApp.MAAnalyticsActionType
+  final public let pageName: Swift.String
+  final public let componentName: Swift.String
+  final public let elementType: Swift.String
+  final public let data: Swift.String
+  public init(eventType: VTBMiniApp.MAAnalyticsEventType, actionType: VTBMiniApp.MAAnalyticsActionType, pageName: Swift.String, componentName: Swift.String, elementType: Swift.String, data: Swift.String)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public protocol MiniAppAdDisplayDelegate : AnyObject {
+  func loadInterstitial(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func showInterstitial(for adId: Swift.String, onClosed: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func loadRewarded(for adId: Swift.String, onLoaded: @escaping (Swift.Result<Swift.Void, any Swift.Error>) -> Swift.Void)
+  func showRewarded(for adId: Swift.String, onClosed: @escaping (Swift.Result<VTBMiniApp.MiniAppReward, any Swift.Error>) -> Swift.Void)
+}
+public enum MASDKAdsDisplayError : Swift.String {
+  case unknownError
+  case failedToConformToProtocol
+  case sdkError
+  case adNotLoaded
+  case adIdError
+  case rewardFailure
+  case hostUIError
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class MASDKCustomPermissionModel : Swift.Codable, Swift.Hashable, Swift.Comparable {
+  public static func < (lhs: VTBMiniApp.MASDKCustomPermissionModel, rhs: VTBMiniApp.MASDKCustomPermissionModel) -> Swift.Bool
+  public static func == (lhs: VTBMiniApp.MASDKCustomPermissionModel, rhs: VTBMiniApp.MASDKCustomPermissionModel) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var permissionName: VTBMiniApp.MiniAppCustomPermissionType
+  public var isPermissionGranted: VTBMiniApp.MiniAppCustomPermissionGrantedStatus
+  public var permissionDescription: Swift.String?
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppUIParams {
+  public init(title: Swift.String = "", miniAppId: Swift.String, miniAppVersion: Swift.String?, config: VTBMiniApp.MiniAppSdkConfig? = nil, messageInterface: any VTBMiniApp.MiniAppMessageDelegate, navigationInterface: (any VTBMiniApp.MiniAppNavigationDelegate)? = nil, queryParams: Swift.String? = nil, adsDisplayer: VTBMiniApp.MiniAppAdDisplayer? = nil, enableSharePreview: Swift.Bool = false, loadFromCacheIfFailed: Swift.Bool = false)
+}
+@_hasMissingDesignatedInitializers public class MiniAppUI {
+  public class func shared() -> VTBMiniApp.MiniAppUI
+  public func create(params: VTBMiniApp.MiniAppUIParams) -> VTBMiniApp.MiniAppViewController
+  public func launch(base: UIKit.UIViewController, params: VTBMiniApp.MiniAppUIParams, delegate: any VTBMiniApp.MiniAppUIDelegate)
+  @objc deinit
+}
+public class MiniAppNavigationConfig {
+  public init(navigationBarVisibility: VTBMiniApp.MiniAppNavigationVisibility? = .never, navigationDelegate: (any VTBMiniApp.MiniAppNavigationDelegate)? = nil, customNavigationView: (any UIKit.UIView & VTBMiniApp.MiniAppNavigationDelegate)? = nil)
+  @objc deinit
+}
+public typealias MiniAppNavigationResponseHandler = (Foundation.URL) -> Swift.Void
+public protocol MiniAppNavigationDelegate : AnyObject {
+  func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping VTBMiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: VTBMiniApp.MiniAppNavigationResponseHandler?)
+  func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping VTBMiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: VTBMiniApp.MiniAppNavigationResponseHandler?, customMiniAppURL: Foundation.URL)
+  func miniAppNavigation(canUse actions: [VTBMiniApp.MiniAppNavigationAction])
+  func miniAppNavigation(delegate: any VTBMiniApp.MiniAppNavigationBarDelegate)
+  func miniAppNavigationCanGo(back: Swift.Bool, forward: Swift.Bool)
+}
+extension VTBMiniApp.MiniAppNavigationDelegate {
+  public func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping VTBMiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: VTBMiniApp.MiniAppNavigationResponseHandler?)
+  public func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping VTBMiniApp.MiniAppNavigationResponseHandler, onClose closeHandler: VTBMiniApp.MiniAppNavigationResponseHandler?, customMiniAppURL: Foundation.URL)
+  public func miniAppNavigation(canUse actions: [VTBMiniApp.MiniAppNavigationAction])
+  public func miniAppNavigation(delegate: any VTBMiniApp.MiniAppNavigationBarDelegate)
+  public func miniAppNavigationCanGo(back: Swift.Bool, forward: Swift.Bool)
+  public func checkWebsiteSecurity(url: Foundation.URL, with responseHandler: @escaping (Swift.Bool) -> Swift.Void)
+}
+public protocol MiniAppNavigationBarDelegate : AnyObject {
+  @discardableResult
+  func miniAppNavigationBar(didTriggerAction action: VTBMiniApp.MiniAppNavigationAction) -> Swift.Bool
+  func miniAppShouldClose() -> VTBMiniApp.CloseAlertInfo?
+}
+public enum MiniAppNavigationAction {
+  case back, forward
+  public static func == (a: VTBMiniApp.MiniAppNavigationAction, b: VTBMiniApp.MiniAppNavigationAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum MiniAppNavigationVisibility {
+  case never, auto, always
+  public static func == (a: VTBMiniApp.MiniAppNavigationVisibility, b: VTBMiniApp.MiniAppNavigationVisibility) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct MiniAppShareContent {
+  public var messageContent: Swift.String
+}
+public struct MiniAppConfigSSLKeyHash {
+  public var pin: Swift.String
+  public var backupPin: Swift.String?
+  public init(pin: Swift.String, backup: Swift.String? = nil)
+}
+public class MiniAppSdkConfig {
+  public var isPreviewMode: Swift.Bool?
+  public var requireMiniAppSignatureVerification: Swift.Bool?
+  public var storageMaxSizeInBytes: Swift.UInt64?
+  public var baseUrl: Swift.String? {
+    get
+    set
+  }
+  public var host: Swift.String? {
+    get
+  }
+  public var sslKeyHash: VTBMiniApp.MiniAppConfigSSLKeyHash? {
+    get
+    set
+  }
+  public var rasProjectId: Swift.String? {
+    get
+    set
+  }
+  public var subscriptionKey: Swift.String? {
+    get
+    set
+  }
+  public var hostAppVersion: Swift.String? {
+    get
+    set
+  }
+  public var analyticsConfigList: [VTBMiniApp.MAAnalyticsConfig]? {
+    get
+    set
+  }
+  public init(baseUrl: Swift.String? = nil, rasProjectId: Swift.String? = nil, subscriptionKey: Swift.String? = nil, hostAppVersion: Swift.String? = nil, isPreviewMode: Swift.Bool? = nil, analyticsConfigList: [VTBMiniApp.MAAnalyticsConfig]? = [], requireMiniAppSignatureVerification: Swift.Bool? = nil, sslKeyHash: VTBMiniApp.MiniAppConfigSSLKeyHash? = nil, storageMaxSizeInBytes: Swift.UInt64? = nil)
+  @objc deinit
+}
+public class MATokenInfo : Swift.Codable {
+  public init(accessToken: Swift.String, expirationDate: Foundation.Date, scopes: VTBMiniApp.MASDKAccessTokenScopes?)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public class MessageToContact : Swift.Codable, Swift.Hashable, Swift.Equatable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: VTBMiniApp.MessageToContact, rhs: VTBMiniApp.MessageToContact) -> Swift.Bool
+  final public let image: Swift.String
+  final public let text: Swift.String
+  final public let caption: Swift.String
+  final public let action: Swift.String
+  final public let bannerMessage: Swift.String?
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public struct MiniAppInfo : Swift.Codable, Swift.Hashable {
+  public static func == (lhs: VTBMiniApp.MiniAppInfo, rhs: VTBMiniApp.MiniAppInfo) -> Swift.Bool
+  public var id: Swift.String
+  public var displayName: Swift.String?
+  public var icon: Foundation.URL
+  public var version: VTBMiniApp.Version
+  public var promotionalImageUrl: Swift.String?
+  public var promotionalText: Swift.String?
+  public init(id: Swift.String, displayName: Swift.String? = nil, icon: Foundation.URL, version: VTBMiniApp.Version, promotionalImageUrl: Swift.String? = nil, promotionalText: Swift.String? = nil)
+  public func hash(into hasher: inout Swift.Hasher)
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct Version : Swift.Codable, Swift.Hashable {
+  public var versionTag: Swift.String
+  public var versionId: Swift.String
+  public init(versionTag: Swift.String, versionId: Swift.String)
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: VTBMiniApp.Version, b: VTBMiniApp.Version) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class MiniAppSharePreviewViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @objc deinit
+}
+public protocol UniversalBridgeDelegate : AnyObject {
+  func sendJsonToHostApp(info: Swift.String, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, VTBMiniApp.UniversalBridgeError>) -> Swift.Void)
+  func sendInfoToHostApp(info: VTBMiniApp.UniversalBridgeInfoParameters, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, VTBMiniApp.UniversalBridgeError>) -> Swift.Void)
+}
+public protocol ChatMessageBridgeDelegate : AnyObject {
+  func sendMessageToContact(_ message: VTBMiniApp.MessageToContact, completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func sendMessageToContactId(_ contactId: Swift.String, message: VTBMiniApp.MessageToContact, completionHandler: @escaping (Swift.Result<Swift.String?, VTBMiniApp.MASDKError>) -> Swift.Void)
+  func sendMessageToMultipleContacts(_ message: VTBMiniApp.MessageToContact, completionHandler: @escaping (Swift.Result<[Swift.String]?, VTBMiniApp.MASDKError>) -> Swift.Void)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class MiniAppExternalWebViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public class func presentModally(url: Foundation.URL, externalLinkResponseHandler: VTBMiniApp.MiniAppNavigationResponseHandler?, customMiniAppURL: Foundation.URL? = nil, onCloseHandler: VTBMiniApp.MiniAppNavigationResponseHandler?)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func loadView()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+}
+extension VTBMiniApp.MiniAppExternalWebViewController : WebKit.WKNavigationDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFail navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy) -> Swift.Void)
+}
+public enum MiniAppJavaScriptError : Swift.String, Swift.Codable {
+  case internalError
+  case unexpectedMessageFormat
+  case invalidPermissionType
+  case valueIsEmpty
+  case scopeError
+  case audienceError
+  case failedToConformToProtocol
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKPermissionError : Swift.String {
+  case denied
+  case notDetermined
+  case restricted
+  case failedToConformToProtocol
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKCustomPermissionError : Swift.String {
+  case unknownError
+  case failedToConformToProtocol
+  case invalidCustomPermissionRequest
+  case invalidCustomPermissionsList
+  case userDenied
+  case outOfScope
+  case userNamePermissionError
+  case profilePhotoPermissionError
+  case accessTokenPermissionError
+  case contactsPermissionError
+  case pointsPermissionError
+  case locationPermissionError
+  public var name: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MASDKAccessTokenError : Swift.Error {
+  case failedToConformToProtocol
+  case audienceNotSupportedError
+  case scopesNotSupportedError
+  case authorizationFailureError(description: Swift.String)
+  case error(description: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public enum MASDKPointError : Swift.Error {
+  case failedToConformToProtocol
+  case error(description: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public enum MASDKDownloadFileError : Swift.Error {
+  case failedToConformToProtocol
+  case invalidUrl
+  case downloadFailed(code: Swift.Int?, reason: Swift.String)
+  case downloadHttpError(code: Swift.Int, reason: Swift.String)
+  case saveTemporarilyFailed
+  case error(description: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var code: Swift.Int? {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+}
+public enum UniversalBridgeError : Swift.Error {
+  case failedToConformToProtocol
+  case error(description: Swift.String)
+  public var name: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public enum MAAnalyticsError : Swift.Error {
+  case failedToConformToProtocol
+  case error(description: Swift.String)
+  public var name: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public struct UniversalBridgeInfoParameters : Swift.Codable {
+  public var key: Swift.String?
+  public var value: Swift.String?
+  public var description: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct CloseAlertInfo : Swift.Codable {
+  public let shouldDisplay: Swift.Bool?
+  public let title: Swift.String?
+  public let description: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public typealias MASDKDownloadedListPermissionsPair = [(VTBMiniApp.MiniAppInfo, [VTBMiniApp.MASDKCustomPermissionModel])]
+public struct MiniAppSDKConstants {
+  public static let miniAppRootFolderName: Swift.String
+}
+public struct PreviewMiniAppInfo : Swift.Codable {
+  public var miniapp: VTBMiniApp.MiniAppInfo
+  public var host: VTBMiniApp.Host?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct Host : Swift.Codable {
+  public var id: Swift.String?
+  public var subscriptionkey: Swift.String?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public protocol MiniAppUIDelegate : AnyObject {
+  func miniApp(_ viewController: VTBMiniApp.MiniAppViewController, didLaunchWith config: VTBMiniApp.MiniAppSdkConfig?)
+  func miniApp(_ viewController: VTBMiniApp.MiniAppViewController, shouldExecute action: VTBMiniApp.MiniAppNavigationAction)
+  func miniApp(_ viewController: VTBMiniApp.MiniAppViewController, didLoadWith error: VTBMiniApp.MASDKError?)
+  func onClose()
+}
+extension VTBMiniApp.MiniAppUIDelegate {
+  public func miniApp(_ viewController: VTBMiniApp.MiniAppViewController, didLaunchWith config: VTBMiniApp.MiniAppSdkConfig?)
+  public func miniApp(_ viewController: VTBMiniApp.MiniAppViewController, shouldExecute action: VTBMiniApp.MiniAppNavigationAction)
+  public func miniApp(_ viewController: VTBMiniApp.MiniAppViewController, didLoadWith error: VTBMiniApp.MASDKError?)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class MiniAppViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public var fallbackView: any VTBMiniApp.MiniAppFallbackViewable {
+    get
+    set
+  }
+  @objc deinit
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @objc @_Concurrency.MainActor(unsafe) public func backPressed()
+  @objc @_Concurrency.MainActor(unsafe) public func forwardPressed()
+  @objc @_Concurrency.MainActor(unsafe) public func closePressed()
+  @_Concurrency.MainActor(unsafe) public func refreshNavigationBarButtons(backButtonEnabled: Swift.Bool, forwardButtonEnabled: Swift.Bool)
+  @objc @_Concurrency.MainActor(unsafe) public func sharePressed()
+  @_Concurrency.MainActor(unsafe) public func closeMiniApp(withConfirmation confirmation: Swift.Bool)
+}
+extension VTBMiniApp.MiniAppViewController : VTBMiniApp.MiniAppNavigationDelegate {
+  @_Concurrency.MainActor(unsafe) public func miniAppNavigation(shouldOpen url: Foundation.URL, with responseHandler: @escaping VTBMiniApp.MiniAppNavigationResponseHandler)
+}
+public enum MASDKError : Swift.Error {
+  case serverError(code: Swift.Int, message: Swift.String)
+  case invalidURLError
+  case invalidAppId
+  case invalidVersionId
+  case invalidResponseData
+  case downloadingFailed
+  case noPublishedVersion
+  case miniAppNotFound
+  case metaDataFailure
+  case invalidContactId
+  case failedToConformToProtocol
+  case invalidSignature
+  case miniAppCorrupted
+  case unknownError(domain: Swift.String, code: Swift.Int, description: Swift.String)
+  case miniAppTooManyRequestsError
+  public func isDeviceOfflineDownloadError() -> Swift.Bool
+  public func isQPSLimitError() -> Swift.Bool
+}
+extension VTBMiniApp.MASDKError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+  public var code: Swift.Int {
+    get
+  }
+}
+public struct MiniAppSSLConfig {
+}
+public protocol MiniAppFallbackViewable : UIKit.UIView {
+  var onRetry: (() -> Swift.Void)? { get set }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class MiniAppCustomNavigationController : UIKit.UINavigationController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func dismiss(animated flag: Swift.Bool, completion: (() -> Swift.Void)? = nil)
+  @available(iOS 5.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(navigationBarClass: Swift.AnyClass?, toolbarClass: Swift.AnyClass?)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(rootViewController: UIKit.UIViewController)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class MiniAppActivityController : UIKit.UIActivityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(activityItems: [Any], applicationActivities: [UIKit.UIActivity]?)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func dismiss(animated flag: Swift.Bool, completion: (() -> Swift.Void)? = nil)
+  @objc deinit
+}
+public protocol MiniAppShareContentDelegate : AnyObject {
+  func shareContent(info: VTBMiniApp.MiniAppShareContent, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, any Swift.Error>) -> Swift.Void)
+}
+extension VTBMiniApp.MiniAppShareContentDelegate {
+  public func shareContent(info: VTBMiniApp.MiniAppShareContent, completionHandler: @escaping (Swift.Result<VTBMiniApp.MASDKProtocolResponse, any Swift.Error>) -> Swift.Void)
+}
+public class MiniAppExternalUrlLoader {
+  weak public var currentWebViewController: UIKit.UIViewController?
+  public var currentResponseHandler: VTBMiniApp.MiniAppNavigationResponseHandler?
+  public var customMiniAppURL: Foundation.URL?
+  public init(webViewController: UIKit.UIViewController? = nil, responseHandler: VTBMiniApp.MiniAppNavigationResponseHandler? = nil, customMiniAppURL: Foundation.URL? = nil)
+  public func shouldOverrideURLLoading(_ url: Foundation.URL?) -> WebKit.WKNavigationActionPolicy
+  @objc deinit
+}
+public class MAPoints : Swift.Codable {
+  public init(standard: Swift.Int, term: Swift.Int, cash: Swift.Int)
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+public struct MASDKLocale {
+  public enum LocalizableKey : Swift.String {
+    case ok
+    case cancel
+    case allow
+    case save
+    case firstLaunchFooter
+    case settingsUserProfileEdit
+    case settingsUserProfileSave
+    case settingsUserProfileAdd
+    case settingsUserProfileDelete
+    case serverError
+    case invalidUrl
+    case invalidAppId
+    case invalidVersionId
+    case invalidContactId
+    case invalidResponse
+    case downloadFailed
+    case saveTemporarilyFailed
+    case signatureFailed
+    case miniAppCorrupted
+    case miniAppTooManyRequestsError
+    case noPublishedVersion
+    case miniappIdNotFound
+    case metaDataRequiredPermissionsFailure
+    case unknownError
+    case hostAppError
+    case failedToConformToProtocol
+    case unknownServerError
+    case adNotLoadedError
+    case adLoadingError
+    case adLoadedError
+    case uiNavButtonClose
+    case uiFallbackTitle
+    case uiFallbackButtonRetry
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public static func localize(bundle path: Swift.String? = nil, _ key: Swift.String) -> Swift.String
+  public static func localize(bundle path: Swift.String? = nil, _ key: VTBMiniApp.MASDKLocale.LocalizableKey) -> Swift.String
+}
+@objc @_inheritsConvenienceInitializers public class MiniAppAnalyticsLoader : ObjectiveC.NSObject {
+  @objc public static func loadMiniAppAnalytics()
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class MiniAppAnalytics {
+  public static let notificationName: Foundation.Notification.Name
+  open class var sdkVersion: Swift.String? {
+    get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class MiniAppView : UIKit.UIView, VTBMiniApp.MiniAppViewable {
+  @_Concurrency.MainActor(unsafe) final public let state: Combine.PassthroughSubject<VTBMiniApp.MiniAppViewState, Swift.Never>
+  @_Concurrency.MainActor(unsafe) public var progressStateView: (any VTBMiniApp.MiniAppProgressViewable)? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var enable3DTouch: Swift.Bool {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public init(params: VTBMiniApp.MiniAppViewParameters)
+  @objc deinit
+  @_Concurrency.MainActor(unsafe) public func load(fromCache: Swift.Bool = false, completion: @escaping ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void))
+  #if compiler(>=5.3) && $AsyncAwait
+  @_Concurrency.MainActor(unsafe) public func loadAsync(fromCache: Swift.Bool = false) async throws -> VTBMiniApp.MiniAppView.MiniAppLoadStatus
+  #endif
+  @_Concurrency.MainActor(unsafe) public func loadFromBundle(miniAppManifest: VTBMiniApp.MiniAppManifest?, completion: @escaping ((Swift.Result<Swift.Bool, VTBMiniApp.MASDKError>) -> Swift.Void))
+  @_Concurrency.MainActor(unsafe) public var alertInfo: VTBMiniApp.CloseAlertInfo? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var miniAppTitle: Swift.String {
+    get
+  }
+  public enum MiniAppLoadStatus {
+    case success
+    public static func == (a: VTBMiniApp.MiniAppView.MiniAppLoadStatus, b: VTBMiniApp.MiniAppView.MiniAppLoadStatus) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension VTBMiniApp.MiniAppView : VTBMiniApp.MiniAppNavigationBarDelegate {
+  @_Concurrency.MainActor(unsafe) public func miniAppNavigationBar(didTriggerAction action: VTBMiniApp.MiniAppNavigationAction) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) public func miniAppShouldClose() -> VTBMiniApp.CloseAlertInfo?
+}
+extension VTBMiniApp.MiniAppView {
+  @_Concurrency.MainActor(unsafe) public func sendJsonToMiniApp(string jsonString: Swift.String)
+}
+extension VTBMiniApp.MiniAppType : Swift.Equatable {}
+extension VTBMiniApp.MiniAppType : Swift.Hashable {}
+extension VTBMiniApp.MiniAppSUIViewAction : Swift.Equatable {}
+extension VTBMiniApp.MiniAppSUIViewAction : Swift.Hashable {}
+extension VTBMiniApp.MASDKProtocolResponse : Swift.Equatable {}
+extension VTBMiniApp.MASDKProtocolResponse : Swift.Hashable {}
+extension VTBMiniApp.MASDKProtocolResponse : Swift.RawRepresentable {}
+extension VTBMiniApp.MASDKPermissionResponse : Swift.Equatable {}
+extension VTBMiniApp.MASDKPermissionResponse : Swift.Hashable {}
+extension VTBMiniApp.MASDKPermissionResponse : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppDevicePermissionType : Swift.Equatable {}
+extension VTBMiniApp.MiniAppDevicePermissionType : Swift.Hashable {}
+extension VTBMiniApp.MiniAppDevicePermissionType : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppCustomPermissionType : Swift.Equatable {}
+extension VTBMiniApp.MiniAppCustomPermissionType : Swift.Hashable {}
+extension VTBMiniApp.MiniAppCustomPermissionType : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppCustomPermissionGrantedStatus : Swift.Equatable {}
+extension VTBMiniApp.MiniAppCustomPermissionGrantedStatus : Swift.Hashable {}
+extension VTBMiniApp.MiniAppCustomPermissionGrantedStatus : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppEvent : Swift.Equatable {}
+extension VTBMiniApp.MiniAppEvent : Swift.Hashable {}
+extension VTBMiniApp.MiniAppEvent : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppKeyboardEvent : Swift.Equatable {}
+extension VTBMiniApp.MiniAppKeyboardEvent : Swift.Hashable {}
+extension VTBMiniApp.MiniAppKeyboardEvent : Swift.RawRepresentable {}
+extension VTBMiniApp.MAAnalyticsEventType : Swift.Equatable {}
+extension VTBMiniApp.MAAnalyticsEventType : Swift.Hashable {}
+extension VTBMiniApp.MAAnalyticsEventType : Swift.RawRepresentable {}
+extension VTBMiniApp.MAAnalyticsActionType : Swift.Equatable {}
+extension VTBMiniApp.MAAnalyticsActionType : Swift.Hashable {}
+extension VTBMiniApp.MAAnalyticsActionType : Swift.RawRepresentable {}
+extension VTBMiniApp.MASDKAdsDisplayError : Swift.Error {}
+extension VTBMiniApp.MASDKAdsDisplayError : Swift.Equatable {}
+extension VTBMiniApp.MASDKAdsDisplayError : Swift.Hashable {}
+extension VTBMiniApp.MASDKAdsDisplayError : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppNavigationAction : Swift.Equatable {}
+extension VTBMiniApp.MiniAppNavigationAction : Swift.Hashable {}
+extension VTBMiniApp.MiniAppNavigationVisibility : Swift.Equatable {}
+extension VTBMiniApp.MiniAppNavigationVisibility : Swift.Hashable {}
+extension VTBMiniApp.MiniAppJavaScriptError : Swift.Error {}
+extension VTBMiniApp.MiniAppJavaScriptError : Swift.Equatable {}
+extension VTBMiniApp.MiniAppJavaScriptError : Swift.Hashable {}
+extension VTBMiniApp.MiniAppJavaScriptError : Swift.RawRepresentable {}
+extension VTBMiniApp.MASDKPermissionError : Swift.Error {}
+extension VTBMiniApp.MASDKPermissionError : Swift.Equatable {}
+extension VTBMiniApp.MASDKPermissionError : Swift.Hashable {}
+extension VTBMiniApp.MASDKPermissionError : Swift.RawRepresentable {}
+extension VTBMiniApp.MASDKCustomPermissionError : Swift.Error {}
+extension VTBMiniApp.MASDKCustomPermissionError : Swift.Equatable {}
+extension VTBMiniApp.MASDKCustomPermissionError : Swift.Hashable {}
+extension VTBMiniApp.MASDKCustomPermissionError : Swift.RawRepresentable {}
+extension VTBMiniApp.MASDKLocale.LocalizableKey : Swift.Equatable {}
+extension VTBMiniApp.MASDKLocale.LocalizableKey : Swift.Hashable {}
+extension VTBMiniApp.MASDKLocale.LocalizableKey : Swift.RawRepresentable {}
+extension VTBMiniApp.MiniAppView.MiniAppLoadStatus : Swift.Equatable {}
+extension VTBMiniApp.MiniAppView.MiniAppLoadStatus : Swift.Hashable {}

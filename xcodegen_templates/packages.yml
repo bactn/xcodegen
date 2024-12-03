@@ -1,4 +1,9 @@
-packages:
-  Moya:
-    url: https://github.com/Moya/Moya.git
-    version: 15.0.3
+# Danh sách SPM muốn sử dụng trong project
+
+# packages:
+#   Moya:
+#     url: https://github.com/Moya/Moya.git
+#     version: 15.0.3
+#   SDWebImage:
+#     url: https://github.com/SDWebImage/SDWebImage.git
+#     version: 5.1.0

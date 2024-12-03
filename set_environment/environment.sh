@@ -1,8 +1,9 @@
 #!/bin/sh
+# Cài đặt môi trường homebrew
 
 set -e
 
-BUNDLER_VERSION=$1
+export BUNDLER_VERSION=2.2.25
 
 # Install Homebrew
 if type brew > /dev/null 2>&1; then
@@ -35,7 +36,8 @@ fi
 
 # Install Bundler
 if [ "$(rbenv exec gem list bundler | grep $BUNDLER_VERSION)" = "" ]; then
-    rbenv exec gem install bundler -v $BUNDLER_VERSION
+    echo "Installing bundler."
+    rbenv exec gem install bundler -v "$BUNDLER_VERSION"
 else
     echo "Bundler $BUNDLER_VERSION already installed."
 fi
